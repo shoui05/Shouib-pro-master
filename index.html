@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ProType - Professional Typing Practice</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #4361ee;
+            --secondary: #3a0ca3;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #fca311;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --background: #ffffff;
+            --text: #333333;
+            --card-bg: #ffffff;
+            --header-bg: #4361ee;
+            --footer-bg: #3a0ca3;
+            --input-bg: #f8f9fa;
+            --border-radius: 12px;
+            --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            transition: var(--transition);
+            overflow-x: hidden;
+        }
+
+        .pc-mode {
+            transform: rotateX(5deg) rotateY(0deg) rotateZ(0deg);
+            transform-style: preserve-3d;
+            perspective: 1000px;
+            width: 95%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 30px;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 
+                        0 0 0 10px rgba(0, 0, 0, 0.05),
+                        0 0 0 15px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(to bottom, rgba(255,255,255,0.95), rgba(245,245,245,0.98));
+            animation: fadeIn 0.8s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px) rotateX(5deg); }
+            to { opacity: 1; transform: translateY(0) rotateX(5deg); }
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--primary);
+            margin-bottom: 25px;
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: pulse 2s infinite;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 10px;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+
+        .difficulty-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+        }
+
+        .difficulty-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border: 2px solid transparent;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 140px;
+        }
+
+        .difficulty-btn.easy {
+            background: linear-gradient(135deg, #2ecc71, #27ae60);
+            color: white;
+        }
+
+        .difficulty-btn.medium {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+        }
+
+        .difficulty-btn.hard {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+        }
+
+        .difficulty-btn.active {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+            border: 2px solid white;
+            animation: bounce 0.5s;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(-5px); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .text-display {
+            background-color: var(--input-bg);
+            padding: 35px;
+            border-radius: var(--border-radius);
+            margin-bottom: 30px;
+            font-size: 1.7rem;
+            line-height: 1.9;
+            min-height: 240px;
+            text-align: left;
+            box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+        }
+
+        .text-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .text-display.active::before {
+            transform: scaleX(1);
+        }
+
+        .current-char {
+            background-color: var(--warning);
+            color: black;
+            padding: 0 6px;
+            border-radius: 5px;
+            animation: blink 1s infinite;
+            font-weight: bold;
+        }
+
+        @keyframes blink {
+            0%, 50% { background-color: var(--warning); }
+            51%, 100% { background-color: rgba(252, 163, 17, 0.3); }
+        }
+
+        .correct {
+            color: var(--success);
+            font-weight: 500;
+        }
+
+        .incorrect {
+            color: var(--danger);
+            text-decoration: underline;
+            font-weight: 500;
+        }
+
+        .indicator {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 30px;
+            height: 80px;
+            position: relative;
+        }
+
+        .light {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background-color: var(--gray);
+            margin: 0 20px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+            border: 2px solid white;
+        }
+
+        .light.correct {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            box-shadow: 0 6px 20px rgba(76, 201, 240, 0.4);
+            animation: pulseLight 0.5s;
+        }
+
+        .light.incorrect {
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+            box-shadow: 0 6px 20px rgba(247, 37, 133, 0.4);
+            animation: shake 0.5s;
+        }
+
+        @keyframes pulseLight {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 35px;
+        }
+
+        .stat {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            text-align: center;
+            box-shadow: var(--box-shadow);
+            transition: var(--transition);
+            animation: slideUp 0.5s ease;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .stat:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            margin-top: 35px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 18px 35px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+            min-width: 180px;
+            justify-content: center;
+        }
+
+        #start-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+        }
+
+        #start-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        #new-text-btn {
+            background: linear-gradient(135deg, var(--success), #2ecc71);
+            color: white;
+        }
+
+        #new-text-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .inactivity-alert {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, var(--danger), #c0392b);
+            color: white;
+            padding: 18px 30px;
+            border-radius: 50px;
+            box-shadow: 0 8px 20px rgba(247, 37, 133, 0.4);
+            display: none;
+            align-items: center;
+            gap: 12px;
+            z-index: 100;
+            animation: slideInUp 0.5s ease;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes slideInUp {
+            from { opacity: 0; transform: translate(-50%, 20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
+        .instructions {
+            margin-top: 45px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            font-size: 1.1rem;
+            text-align: left;
+            box-shadow: var(--box-shadow);
+            animation: fadeIn 1s ease;
+            border: 1px solid #e0e0e0;
+        }
+
+        .instructions h3 {
+            margin-bottom: 18px;
+            color: var(--primary);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .instructions ul {
+            padding-left: 25px;
+        }
+
+        .instructions li {
+            margin-bottom: 12px;
+            line-height: 1.7;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: var(--input-bg);
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 25px 0;
+            box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            width: 0%;
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        @media (max-width: 968px) {
+            .pc-mode {
+                transform: none;
+                perspective: none;
+                width: 100%;
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .text-display {
+                font-size: 1.5rem;
+                padding: 25px;
+                min-height: 220px;
+            }
+            
+            .stats {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .difficulty-selector {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .difficulty-btn {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            button {
+                width: 100%;
+                max-width: 280px;
+            }
+            
+            .stat-value {
+                font-size: 2.2rem;
+            }
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            color: white;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div class="pc-mode">
+        <h1><i class="fas fa-keyboard"></i> ProType Master</h1>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn easy active" data-difficulty="easy">
+                <i class="fas fa-leaf"></i> Easy
+            </button>
+            <button class="difficulty-btn medium" data-difficulty="medium">
+                <i class="fas fa-fire"></i> Medium
+            </button>
+            <button class="difficulty-btn hard" data-difficulty="hard">
+                <i class="fas fa-mountain"></i> Hard
+            </button>
+        </div>
+        
+        <div class="text-display" id="text-display">
+            Press Start to begin typing practice. Press Enter to start.
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+        
+        <div class="indicator">
+            <div class="light" id="status-light">
+                <i class="fas fa-keyboard"></i>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-value" id="wpm">0</div>
+                <div class="stat-label">Words Per Minute</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="accuracy">100%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat">
+                <div class="stat-value" id="timer">0:00</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button id="start-btn">
+                <i class="fas fa-play"></i> Start
+            </button>
+            <button id="new-text-btn">
+                <i class="fas fa-sync"></i> New Text
+            </button>
+        </div>
+        
+        <div class="instructions">
+            <h3><i class="fas fa-info-circle"></i> Instructions</h3>
+            <ul>
+                <li>Select your difficulty level (Easy, Medium, Hard)</li>
+                <li>Press Start or press Enter key to begin typing</li>
+                <li>Green light indicates correct typing</li>
+                <li>Red light indicates incorrect typing</li>
+                <li>You cannot proceed to the next character if you make a mistake</li>
+                <li>Typing will automatically pause after 5 seconds of inactivity</li>
+                <li>Practice regularly to improve your typing speed and accuracy</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="inactivity-alert" id="inactivity-alert">
+        <i class="fas fa-clock"></i> Typing paused due to inactivity
+    </div>
+
+    <div class="footer">
+        ProType Master &copy; 2023 - Professional Typing Practice
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const textDisplay = document.getElementById('text-display');
+            const startBtn = document.getElementById('start-btn');
+            const newTextBtn = document.getElementById('new-text-btn');
+            const statusLight = document.getElementById('status-light');
+            const accuracyDisplay = document.getElementById('accuracy');
+            const wpmDisplay = document.getElementById('wpm');
+            const timerDisplay = document.getElementById('timer');
+            const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+            const progressBar = document.getElementById('progress-bar');
+            const inactivityAlert = document.getElementById('inactivity-alert');
+            
+            // Sentences that cover all letters and punctuation
+            const sentences = {
+                easy: [
+                    "The quick brown fox jumps over the lazy dog.",
+                    "Pack my box with five dozen liquor jugs.",
+                    "How quickly daft jumping zebras vex!",
+                    "Sphinx of black quartz, judge my vow.",
+                    "Waltz, bad nymph, for quick jigs vex."
+                ],
+                medium: [
+                    "The five boxing wizards jump quickly; a truly amazing feat of agility and strength!",
+                    "Jaded zombies acted quaintly but kept driving their oxen forward; what a peculiar sight!",
+                    "When zombies arrive, quickly fax Judge Pat; we need immediate legal protection!",
+                    "Big fjords vex quick waltz nymph: such is the complexity of linguistic puzzles.",
+                    "Glib jocks quiz nymph to vex dwarf: a simple yet effective strategy in word games."
+                ],
+                hard: [
+                    "The quick, brown fox jumps over a lazy dog. DJs flock by when MTV ax quiz prog. Junk MTV quiz graced by fox whelps. Bawds jog, flick quartz, vex nymphs.",
+                    "Waltz, bad nymph, for quick jigs vex! Fox nymphs grab quick-jived waltz. Brick quiz whangs jumpy veldt fox. Bright vixens jump; dozy fowl quack.",
+                    "Quick wafting zephyrs vex bold Jim. Quick zephyrs blow, vexing daft Jim. Sex-charged fop blew my junk TV quiz. How quickly daft jumping zebras vex.",
+                    "Two driven jocks help fax my big quiz. Quick, Baz, get my woven flax jodhpurs! Now fax quiz Jack! my brave ghost pled. Five quacking zephyrs jolt my wax bed.",
+                    "The jay, pig, fox, zebra, and my wolves quack! Blowzy red vixens fight for a quick jump. Joaquin Phoenix was gazed by MTV for luck. A wizard's job is to vex chumps quickly in fog."
+                ]
+            };
+            
+            let currentText = '';
+            let currentIndex = 0;
+            let correctCount = 0;
+            let incorrectCount = 0;
+            let startTime;
+            let timerInterval;
+            let inactivityTimer;
+            let isStarted = false;
+            let currentDifficulty = 'easy';
+            
+            // Set difficulty
+            difficultyButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    difficultyButtons.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentDifficulty = this.dataset.difficulty;
+                    loadNewText();
+                });
+            });
+            
+            // Load new text based on difficulty
+            function loadNewText() {
+                const texts = sentences[currentDifficulty];
+                const randomIndex = Math.floor(Math.random() * texts.length);
+                currentText = texts[randomIndex];
+                
+                textDisplay.innerHTML = currentText.split('').map(char => {
+                    return `<span>${char}</span>`;
+                }).join('');
+                
+                // Reset state
+                currentIndex = 0;
+                correctCount = 0;
+                incorrectCount = 0;
+                isStarted = false;
+                textDisplay.classList.remove('active');
+                
+                // Highlight first character
+                const firstChar = textDisplay.querySelector('span');
+                if (firstChar) {
+                    firstChar.classList.add('current-char');
+                }
+                
+                // Reset stats
+                accuracyDisplay.textContent = '100%';
+                wpmDisplay.textContent = '0';
+                timerDisplay.textContent = '0:00';
+                statusLight.className = 'light';
+                progressBar.style.width = '0%';
+                
+                // Update button text
+                startBtn.innerHTML = '<i class="fas fa-play"></i> Start';
+                
+                // Clear any existing timers
+                clearInterval(timerInterval);
+                clearTimeout(inactivityTimer);
+                
+                // Hide inactivity alert
+                inactivityAlert.style.display = 'none';
+            }
+            
+            // Start typing
+            function startTyping() {
+                if (!isStarted) {
+                    isStarted = true;
+                    startTimer();
+                    resetInactivityTimer();
+                    textDisplay.classList.add('active');
+                    startBtn.innerHTML = '<i class="fas fa-pause"></i> Paused';
+                    window.addEventListener('keydown', handleKeyDown);
+                }
+            }
+            
+            // Reset inactivity timer
+            function resetInactivityTimer() {
+                clearTimeout(inactivityTimer);
+                inactivityTimer = setTimeout(pauseDueToInactivity, 5000); // 5 seconds
+            }
+            
+            // Pause due to inactivity
+            function pauseDueToInactivity() {
+                if (isStarted) {
+                    isStarted = false;
+                    clearInterval(timerInterval);
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                    statusLight.className = 'light';
+                    
+                    // Show inactivity alert
+                    inactivityAlert.style.display = 'flex';
+                    setTimeout(() => {
+                        inactivityAlert.style.display = 'none';
+                    }, 3000);
+                }
+            }
+            
+            // Handle key press
+            function handleKeyDown(e) {
+                if (!isStarted) {
+                    if (e.key === 'Enter') {
+                        startTyping();
+                    }
+                    return;
+                }
+                
+                // Reset inactivity timer on key press
+                resetInactivityTimer();
+                
+                // Prevent default action for all keys except Tab and Escape
+                if (e.key !== 'Tab' && e.key !== 'Escape') {
+                    e.preventDefault();
+                }
+                
+                const expectedChar = currentText[currentIndex];
+                const charSpans = textDisplay.querySelectorAll('span');
+                
+                if (e.key === expectedChar) {
+                    // Correct typing
+                    charSpans[currentIndex].classList.add('correct');
+                    charSpans[currentIndex].classList.remove('current-char', 'incorrect');
+                    correctCount++;
+                    statusLight.className = 'light correct';
+                } else {
+                    // Incorrect typing
+                    charSpans[currentIndex].classList.add('incorrect');
+                    incorrectCount++;
+                    statusLight.className = 'light incorrect';
+                    return; // Don't advance to next character
+                }
+                
+                // Move to next character
+                currentIndex++;
+                
+                // Update progress bar
+                progressBar.style.width = `${(currentIndex / currentText.length) * 100}%`;
+                
+                // Update accuracy
+                updateAccuracy();
+                
+                // Highlight next character
+                if (currentIndex < charSpans.length) {
+                    charSpans[currentIndex].classList.add('current-char');
+                } else {
+                    // Finished typing
+                    finishTyping();
+                }
+            }
+            
+            // Update accuracy
+            function updateAccuracy() {
+                const totalTyped = correctCount + incorrectCount;
+                if (totalTyped === 0) {
+                    accuracyDisplay.textContent = '100%';
+                } else {
+                    const accuracy = Math.round((correctCount / totalTyped) * 100);
+                    accuracyDisplay.textContent = `${accuracy}%`;
+                }
+            }
+            
+            // Start timer
+            function startTimer() {
+                startTime = new Date();
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            // Update timer
+            function updateTimer() {
+                const currentTime = new Date();
+                const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+                const minutes = Math.floor(elapsedTime / 60);
+                const seconds = elapsedTime % 60;
+                timerDisplay.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                
+                // Calculate WPM (assuming 5 characters per word)
+                if (correctCount > 0) {
+                    const words = correctCount / 5;
+                    const minutesPassed = elapsedTime / 60;
+                    const wpm = Math.round(words / minutesPassed);
+                    wpmDisplay.textContent = wpm;
+                }
+            }
+            
+            // Finish typing
+            function finishTyping() {
+                clearInterval(timerInterval);
+                clearTimeout(inactivityTimer);
+                isStarted = false;
+                startBtn.innerHTML = '<i class="fas fa-check"></i> Completed!';
+                window.removeEventListener('keydown', handleKeyDown);
+                statusLight.className = 'light';
+                textDisplay.classList.remove('active');
+            }
+            
+            // Event listeners
+            startBtn.addEventListener('click', function() {
+                if (!isStarted) {
+                    startTyping();
+                } else {
+                    isStarted = false;
+                    clearInterval(timerInterval);
+                    clearTimeout(inactivityTimer);
+                    startBtn.innerHTML = '<i class="fas fa-play"></i> Resume';
+                    statusLight.className = 'light';
+                }
+            });
+            
+            newTextBtn.addEventListener('click', loadNewText);
+            
+            // Start with Enter key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !isStarted) {
+                    startTyping();
+                }
+            });
+            
+            // Initialize with first text
+            loadNewText();
+        });
+    </script>
+</body>
+</html>
